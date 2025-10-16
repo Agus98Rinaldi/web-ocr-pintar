@@ -188,24 +188,15 @@
                 btn.addEventListener('click', () => {
                     const view = btn.dataset.view;
                     
-                    // Update button styles
-                    viewBtns.forEach(b => {
-                        b.classList.remove('bg-slate-200', 'dark:bg-slate-800');
-                    });
+                    viewBtns.forEach(b => b.classList.remove('bg-slate-200', 'dark:bg-slate-800'));
                     btn.classList.add('bg-slate-200', 'dark:bg-slate-800');
 
-                    // Update container width
                     appContainer.classList.remove('max-w-6xl', 'max-w-3xl', 'max-w-lg');
-                    if (view === 'laptop') {
-                        appContainer.classList.add('max-w-6xl');
-                    } else if (view === 'tablet') {
-                        appContainer.classList.add('max-w-3xl');
-                    } else {
-                        appContainer.classList.add('max-w-lg');
-                    }
+                    if (view === 'laptop') appContainer.classList.add('max-w-6xl');
+                    else if (view === 'tablet') appContainer.classList.add('max-w-3xl');
+                    else appContainer.classList.add('max-w-lg');
                 });
             });
-
 
             // === Theme Management ===
             const applyTheme = (theme) => {
@@ -229,6 +220,38 @@
                 localStorage.setItem('theme', newTheme);
                 applyTheme(newTheme);
             });
+            
+            // Helper function to create a worker from a Blob to bypass potential CORS/CSP issues
+            const createWorkerWithBlob = async () => {
+                try {
+                    const workerUrl = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js';
+                    const response = await fetch(workerUrl);
+                    if (!response.ok) throw new Error(`Failed to fetch worker script: ${response.statusText}`);
+                    
+                    const workerScript = await response.text();
+                    const blob = new Blob([workerScript], { type: 'application/javascript' });
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    return Tesseract.createWorker({
+                        workerPath: blobUrl,
+                        corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core.wasm.js',
+                        logger: m => {
+                            console.log(m);
+                            if (m.status === 'recognizing text') {
+                                loaderText.textContent = `Mengenali teks... (${Math.round(m.progress * 100)}%)`;
+                            } else if (m.status.includes('loading')) {
+                                loaderText.textContent = `Memuat model AI...`;
+                            } else {
+                                loaderText.textContent = `Inisialisasi mesin...`;
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.error("Failed to create worker from Blob:", e);
+                    showNotification('Gagal memuat mesin AI.', 'error');
+                    return null;
+                }
+            };
 
             // === OCR Processing Logic ===
             const processImage = async (imageFile) => {
@@ -241,21 +264,8 @@
                 saveBtn.disabled = true;
 
                 try {
-                    currentWorker = await Tesseract.createWorker({
-                        // FINAL FIX: Explicitly set ALL necessary paths for robust loading on live servers
-                        workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js',
-                        corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core.wasm.js',
-                        logger: m => {
-                            console.log(m); // Log progress for easier debugging
-                            if (m.status === 'recognizing text') {
-                                loaderText.textContent = `Mengenali teks... (${Math.round(m.progress * 100)}%)`;
-                            } else if (m.status.includes('loading')) {
-                                loaderText.textContent = 'Memuat model AI...';
-                            } else {
-                                loaderText.textContent = 'Inisialisasi mesin...';
-                            }
-                        }
-                    });
+                    currentWorker = await createWorkerWithBlob();
+                    if (!currentWorker) throw new Error("Worker initialization failed.");
 
                     await currentWorker.loadLanguage('ind+ara');
                     await currentWorker.initialize('ind+ara');
