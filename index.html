@@ -51,7 +51,7 @@
             <div class="flex justify-between items-center mb-6">
                 <h2 class="font-bold text-lg text-sky-600 dark:text-sky-400">Menu</h2>
                 <button id="close-sidebar-btn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                     <svg xmlns="http://www.w.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
             <nav class="flex flex-col gap-2">
@@ -94,7 +94,7 @@
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
             </button>
              <button data-view="tablet" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800" title="Tampilan Tablet">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tablet"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
+                 <svg xmlns="http://www.w.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tablet"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
             </button>
             <button data-view="laptop" class="view-btn p-2 rounded-lg bg-slate-200 dark:bg-slate-800" title="Tampilan Laptop">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55A1 1 0 0 1 20.7 20H3.3a1 1 0 0 1-.58-1.45L4 16"/></svg>
@@ -242,11 +242,16 @@
 
                 try {
                     currentWorker = await Tesseract.createWorker({
+                        // FIX: Explicitly set the core path to prevent loading issues on live servers
+                        corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core.wasm.js',
                         logger: m => {
+                            console.log(m); // Log progress for easier debugging
                             if (m.status === 'recognizing text') {
                                 loaderText.textContent = `Mengenali teks... (${Math.round(m.progress * 100)}%)`;
+                            } else if (m.status.includes('loading')) {
+                                loaderText.textContent = 'Memuat model AI...';
                             } else {
-                                loaderText.textContent = 'Memuat model bahasa...';
+                                loaderText.textContent = 'Inisialisasi mesin...';
                             }
                         }
                     });
