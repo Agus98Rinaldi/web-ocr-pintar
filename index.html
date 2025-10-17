@@ -51,7 +51,7 @@
             <div class="flex justify-between items-center mb-6">
                 <h2 class="font-bold text-lg text-sky-600 dark:text-sky-400">Menu</h2>
                 <button id="close-sidebar-btn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
             <nav class="flex flex-col gap-2">
@@ -168,7 +168,35 @@
             const appContainer = document.getElementById('app-container');
             const viewBtns = document.querySelectorAll('.view-btn');
 
-            let currentWorker = null;
+            // === NEW ARCHITECTURE: Persistent Worker using Scheduler ===
+            let scheduler;
+            let isWorkerReady = false;
+
+            // Function to initialize the scheduler and one persistent worker
+            const initializeScheduler = async () => {
+                try {
+                    console.log('Initializing scheduler...');
+                    scheduler = Tesseract.createScheduler();
+                    
+                    // FIX: Initialize worker and languages in a single, more robust call.
+                    // This is the recommended pattern for Tesseract.js v5 and avoids potential race conditions.
+                    const worker = await Tesseract.createWorker('ind+ara', 1, {
+                         workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js',
+                         corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core.wasm.js',
+                    });
+                    
+                    scheduler.addWorker(worker);
+                    isWorkerReady = true;
+                    console.log('Worker is ready and languages are loaded.');
+                    showNotification('Mesin AI siap digunakan!', 'success');
+                } catch (error) {
+                    console.error('Failed to initialize AI worker:', error);
+                    showNotification('Gagal memuat mesin AI. Coba refresh.', 'error');
+                }
+            };
+            
+            // Initialize the AI engine as soon as the page loads
+            initializeScheduler();
             
             // === Sidebar Management ===
             const openSidebar = () => {
@@ -187,10 +215,8 @@
             viewBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const view = btn.dataset.view;
-                    
                     viewBtns.forEach(b => b.classList.remove('bg-slate-200', 'dark:bg-slate-800'));
                     btn.classList.add('bg-slate-200', 'dark:bg-slate-800');
-
                     appContainer.classList.remove('max-w-6xl', 'max-w-3xl', 'max-w-lg');
                     if (view === 'laptop') appContainer.classList.add('max-w-6xl');
                     else if (view === 'tablet') appContainer.classList.add('max-w-3xl');
@@ -210,51 +236,22 @@
                     themeIconDark.classList.add('hidden');
                 }
             };
-
             const savedTheme = localStorage.getItem('theme');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             applyTheme(savedTheme || (systemPrefersDark ? 'dark' : 'light'));
-
             themeToggle.addEventListener('click', () => {
                 const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
                 localStorage.setItem('theme', newTheme);
                 applyTheme(newTheme);
             });
-            
-            // Helper function to create a worker from a Blob to bypass potential CORS/CSP issues
-            const createWorkerWithBlob = async () => {
-                try {
-                    const workerUrl = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js';
-                    const response = await fetch(workerUrl);
-                    if (!response.ok) throw new Error(`Failed to fetch worker script: ${response.statusText}`);
-                    
-                    const workerScript = await response.text();
-                    const blob = new Blob([workerScript], { type: 'application/javascript' });
-                    const blobUrl = URL.createObjectURL(blob);
-                    
-                    return Tesseract.createWorker({
-                        workerPath: blobUrl,
-                        corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core.wasm.js',
-                        logger: m => {
-                            console.log(m);
-                            if (m.status === 'recognizing text') {
-                                loaderText.textContent = `Mengenali teks... (${Math.round(m.progress * 100)}%)`;
-                            } else if (m.status.includes('loading')) {
-                                loaderText.textContent = `Memuat model AI...`;
-                            } else {
-                                loaderText.textContent = `Inisialisasi mesin...`;
-                            }
-                        }
-                    });
-                } catch (e) {
-                    console.error("Failed to create worker from Blob:", e);
-                    showNotification('Gagal memuat mesin AI.', 'error');
-                    return null;
-                }
-            };
 
-            // === OCR Processing Logic ===
+            // === OCR Processing Logic (using the scheduler) ===
             const processImage = async (imageFile) => {
+                if (!isWorkerReady) {
+                    showNotification('Mesin AI belum siap, mohon tunggu.', 'info');
+                    return;
+                }
+
                 pastedImage.src = URL.createObjectURL(imageFile);
                 pastedImage.classList.remove('hidden');
                 pastePlaceholder.classList.add('hidden');
@@ -264,13 +261,8 @@
                 saveBtn.disabled = true;
 
                 try {
-                    currentWorker = await createWorkerWithBlob();
-                    if (!currentWorker) throw new Error("Worker initialization failed.");
-
-                    await currentWorker.loadLanguage('ind+ara');
-                    await currentWorker.initialize('ind+ara');
-                    
-                    const { data: { text } } = await currentWorker.recognize(imageFile);
+                    loaderText.textContent = `Mengirim tugas ke AI...`;
+                    const { data: { text } } = await scheduler.addJob('recognize', imageFile);
                     
                     outputText.value = text || "Tidak ada teks yang terdeteksi.";
                     showNotification(text ? 'Teks berhasil diekstrak!' : 'Tidak ada teks yang terdeteksi.', text ? 'success' : 'info');
@@ -278,17 +270,12 @@
                         copyBtn.disabled = false;
                         saveBtn.disabled = false;
                     }
-
                 } catch (error) {
                     console.error("OCR Error:", error);
                     outputText.value = "Terjadi kesalahan saat memproses gambar.";
                     showNotification('Gagal memproses gambar.', 'error');
                 } finally {
                     loader.classList.add('hidden');
-                    if (currentWorker) {
-                        await currentWorker.terminate();
-                        currentWorker = null;
-                    }
                 }
             };
 
@@ -316,7 +303,6 @@
                         .catch(() => showNotification('Gagal menyalin.', 'error'));
                 }
             });
-
             saveBtn.addEventListener('click', () => {
                 if (outputText.value) {
                     const blob = new Blob([outputText.value], { type: 'text/plain;charset=utf-8' });
@@ -336,16 +322,12 @@
             let notificationTimeout;
             const showNotification = (message, type = 'success') => {
                 notification.textContent = message;
-                
                 notification.classList.remove('bg-sky-600', 'bg-red-600', 'bg-slate-600');
-                
                 if (type === 'success') notification.classList.add('bg-sky-600');
                 else if (type === 'error') notification.classList.add('bg-red-600');
                 else notification.classList.add('bg-slate-600');
-                
                 clearTimeout(notificationTimeout);
                 notification.classList.remove('opacity-0', 'translate-y-20');
-
                 notificationTimeout = setTimeout(() => {
                     notification.classList.add('opacity-0', 'translate-y-20');
                 }, 3000);
