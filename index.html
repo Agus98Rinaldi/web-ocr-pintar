@@ -22,51 +22,43 @@
         /* Custom scrollbar for a cleaner look */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
-        .dark ::-webkit-scrollbar-track { background: #0f172a; }
+        .dark ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
         /* Smooth transitions for a polished feel */
-        * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease; }
+        * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease; }
         .sidebar-transition { transition: transform 0.3s ease-in-out; }
     </style>
     <script>
         // Tailwind dark mode configuration
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        'primary': '#14B8A6', // Teal
-                        'primary-hover': '#0D9488',
-                    }
-                }
-            }
         }
     </script>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 antialiased min-h-screen flex items-center justify-center p-2 sm:p-4">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 antialiased min-h-screen flex items-center justify-center p-4">
 
     <!-- Sidebar Menu -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 opacity-0 pointer-events-none transition-opacity duration-300"></div>
-    <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white dark:bg-slate-800 z-50 shadow-lg transform -translate-x-full sidebar-transition">
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white dark:bg-slate-800 z-50 shadow-lg transform -translate-x-full sidebar-transition">
         <div class="p-4 flex flex-col h-full">
             <div>
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="font-bold text-lg text-primary">Menu</h2>
+                    <h2 class="font-bold text-lg text-sky-600 dark:text-sky-400">Menu</h2>
                     <button id="close-sidebar-btn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </div>
                 <nav class="flex flex-col gap-2">
-                    <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                         <span>Tentang Web</span>
                     </a>
-                    <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-text"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 8H7"/><path d="M17 12H7"/></svg>
+                    <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-text"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 8H7"/><path d="M17 12H7"/></svg>
                         <span>Kritik & Saran</span>
                     </a>
                 </nav>
@@ -74,94 +66,95 @@
             <div class="mt-auto">
                 <div class="flex items-center gap-1">
                     <label for="api-key-input" class="text-sm font-medium text-slate-600 dark:text-slate-400">Kunci API Gemini</label>
-                    <a href="https://aistudio.google.com/app/apikey" target="_blank" title="Cara mendapatkan kunci API" class="text-slate-400 hover:text-primary">
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" title="Cara mendapatkan kunci API" class="text-slate-400 hover:text-sky-500">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                     </a>
                 </div>
-                <input type="password" id="api-key-input" placeholder="Masukkan kunci API Anda" class="mt-1 w-full p-2 border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+                <input type="password" id="api-key-input" placeholder="Masukkan kunci API Anda" class="mt-1 w-full p-2 border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
                 <p class="text-xs text-slate-400 mt-1">Kunci Anda disimpan dengan aman di browser.</p>
             </div>
         </div>
     </aside>
 
-    <div id="app-container" class="w-full max-w-5xl bg-white dark:bg-slate-800/50 p-4 sm:p-6 md:p-8 rounded-2xl shadow-lg transition-all duration-300">
+    <div id="app-container" class="w-full max-w-6xl bg-slate-100 dark:bg-slate-900/50 p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm transition-all duration-300">
         
         <!-- Header & Navigation -->
         <header class="grid grid-cols-3 items-center mb-4">
             <div class="flex justify-start">
-                <button id="menu-btn" title="Buka Menu" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                <button id="menu-btn" title="Buka Menu" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
                 </button>
             </div>
             <div class="text-center">
-                <h1 class="text-xl sm:text-2xl font-bold text-primary">OCR Pintar</h1>
+                <h1 class="text-xl sm:text-2xl font-bold text-sky-600 dark:text-sky-400">OCR Pintar</h1>
                 <p class="text-slate-500 dark:text-slate-400 mt-1 text-xs sm:text-sm">Diperkuat oleh Gemini AI</p>
             </div>
             <div class="flex justify-end">
-                <button id="theme-toggle" title="Ubah Tema" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-primary">
-                    <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-                    <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                <button id="theme-toggle" title="Ubah Tema" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                    <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                 </button>
             </div>
         </header>
 
+        <!-- View Mode Selector -->
         <div class="flex justify-center items-center gap-2 mb-4">
-            <button data-view="mobile" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700" title="Tampilan HP">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+            <button data-view="mobile" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800" title="Tampilan HP">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
             </button>
-             <button data-view="tablet" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700" title="Tampilan Tablet">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tablet"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
+             <button data-view="tablet" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800" title="Tampilan Tablet">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tablet"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
             </button>
-            <button data-view="laptop" class="view-btn p-2 rounded-lg bg-slate-200 dark:bg-slate-700" title="Tampilan Laptop">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55A1 1 0 0 1 20.7 20H3.3a1 1 0 0 1-.58-1.45L4 16"/></svg>
+            <button data-view="laptop" class="view-btn p-2 rounded-lg bg-slate-200 dark:bg-slate-800" title="Tampilan Laptop">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55A1 1 0 0 1 20.7 20H3.3a1 1 0 0 1-.58-1.45L4 16"/></svg>
             </button>
         </div>
         
-        <p class="text-xs text-center text-slate-400 dark:text-slate-500 mb-6">Hasil pindaian dari AI, mohon periksa kembali keakuratannya.</p>
+        <p class="text-xs text-center text-slate-400 dark:text-slate-500 mb-4">Hasil pindaian dari AI, mohon periksa kembali keakuratannya.</p>
 
-        <main class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             <!-- Kolom Input Gambar -->
-            <div class="flex flex-col h-[50vh] md:h-auto">
-                <div id="paste-area" class="relative w-full flex-grow bg-slate-50 dark:bg-slate-700/50 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl flex justify-center items-center text-center p-4 cursor-pointer hover:border-primary dark:hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary" tabindex="0">
+            <div class="flex flex-col h-[50vh] lg:h-auto">
+                <div id="paste-area" class="relative w-full flex-grow bg-white dark:bg-slate-800/50 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl flex justify-center items-center text-center p-4 cursor-pointer hover:border-sky-500 dark:hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500" tabindex="0">
                     <div id="paste-placeholder" class="text-slate-400 dark:text-slate-500 transition-opacity duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload-cloud mx-auto mb-2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
                         <p>Tempel gambar atau klik untuk unggah</p>
                     </div>
                     <img id="pasted-image" src="" alt="Gambar yang ditempel" class="hidden max-w-full max-h-full object-contain rounded-lg"/>
                     <div id="loader" class="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-white rounded-xl hidden transition-opacity duration-300">
-                        <svg class="animate-spin h-8 w-8 text-white mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                        <p id="loader-text" class="text-sm font-medium">Sedang memproses gambar... Gunakan waktu menunggu sambil berdzikir.</p>
+                        <svg class="animate-spin h-8 w-8 text-white mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                        <p id="loader-text" class="text-sm font-medium">Memproses gambar...</p>
                     </div>
                 </div>
                 <input type="file" id="file-upload" class="hidden" accept="image/*">
             </div>
 
             <!-- Kolom Hasil Teks -->
-            <div class="flex flex-col h-[50vh] md:h-auto">
+            <div class="flex flex-col h-[50vh] lg:h-auto">
                 <div class="flex justify-between items-center mb-3">
-                     <h2 class="font-semibold text-lg text-slate-700 dark:text-slate-300">Hasil Teks</h2>
-                     <div class="flex items-center flex-wrap justify-end gap-1">
+                     <h2 class="font-semibold text-lg">Hasil Teks</h2>
+                     <div class="flex items-center gap-2">
                         <!-- GEMINI BUTTONS -->
-                        <button id="gemini-explain-btn" title="Jelaskan dengan AI ✨" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary" disabled>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.9 4.2-4.2 1.9 4.2 1.9 1.9 4.2 1.9-4.2 4.2-1.9-4.2-1.9L12 3z"/><path d="M5 13l1.9 4.2 4.2 1.9-4.2 1.9L5 23l-1.9-4.2-4.2-1.9 4.2-1.9L5 13z"/></svg>
+                        <button id="gemini-explain-btn" title="Jelaskan dengan AI ✨" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.9 4.2-4.2 1.9 4.2 1.9 1.9 4.2 1.9-4.2 4.2-1.9-4.2-1.9L12 3z"/><path d="M5 13l1.9 4.2 4.2 1.9-4.2 1.9L5 23l-1.9-4.2-4.2-1.9 4.2-1.9L5 13z"/></svg>
                         </button>
-                        <button id="gemini-translate-btn" title="Terjemahkan ke Indonesia ✨" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary" disabled>
-                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-languages"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+                        <button id="gemini-translate-btn" title="Terjemahkan ke Indonesia ✨" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-languages"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
                         </button>
-                        <div class="h-5 w-px bg-slate-300 dark:bg-slate-600 mx-1"></div>
+                        <div class="h-5 w-px bg-slate-300 dark:bg-slate-700"></div>
                         <!-- STANDARD BUTTONS -->
-                        <button id="clear-btn" title="Hapus Hasil" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary" disabled>
-                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        <button id="clear-btn" title="Hapus Hasil" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                         </button>
-                        <button id="copy-btn" title="Salin Hasil" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary" disabled>
-                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        <button id="copy-btn" title="Salin Hasil" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                         </button>
-                        <button id="save-btn" title="Simpan sebagai .txt" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary" disabled>
-                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        <button id="save-btn" title="Simpan sebagai .txt" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                         </button>
                      </div>
                 </div>
-                <textarea id="output-text" readonly class="font-arabic w-full flex-grow bg-slate-50 dark:bg-slate-700/50 border border-slate-300 dark:border-slate-600 rounded-xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Hasil ekstraksi teks akan muncul di sini..."></textarea>
+                <textarea id="output-text" readonly class="font-arabic w-full flex-grow bg-white dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Hasil ekstraksi teks akan muncul di sini..."></textarea>
             </div>
         </main>
         
@@ -175,16 +168,16 @@
     <div id="gemini-modal-overlay" class="fixed inset-0 bg-black/60 z-[99] opacity-0 pointer-events-none transition-opacity duration-300"></div>
     <div id="gemini-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl bg-white dark:bg-slate-800 z-[100] rounded-2xl shadow-lg p-6 transform scale-95 opacity-0 pointer-events-none transition-all duration-300">
         <div class="flex justify-between items-center mb-4">
-            <h3 id="gemini-modal-title" class="text-xl font-bold text-primary">Hasil dari AI ✨</h3>
+            <h3 id="gemini-modal-title" class="text-xl font-bold text-sky-600 dark:text-sky-400">Hasil dari AI ✨</h3>
             <button id="gemini-modal-close-btn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
         </div>
         <div id="gemini-modal-content" class="max-h-[60vh] overflow-y-auto pr-2 font-arabic text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
             <!-- Gemini result will be inserted here -->
         </div>
         <div id="gemini-modal-loader" class="text-center py-8 hidden">
-            <svg class="animate-spin h-8 w-8 text-primary mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <svg class="animate-spin h-8 w-8 text-sky-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
             <p class="mt-2 text-slate-500 dark:text-slate-400">AI sedang berpikir...</p>
         </div>
     </div>
@@ -224,7 +217,7 @@
             const geminiModalContent = document.getElementById('gemini-modal-content');
             const geminiModalLoader = document.getElementById('gemini-modal-loader');
             
-            // The master prompt for Gemini Vision OCR - ENHANCED V3
+            // The master prompt for Gemini Vision OCR - ENHANCED V2
             const GEMINI_OCR_PROMPT = `Anda adalah AI OCR Assistant dengan tingkat presisi tertinggi, yang bertugas sebagai pemindai visual murni.
 
 ATURAN MUTLAK:
@@ -272,10 +265,10 @@ FORMAT OUTPUT FINAL (HANYA INI, TANPA KATA PEMBUKA/PENUTUP):
             viewBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const view = btn.dataset.view;
-                    viewBtns.forEach(b => b.classList.remove('bg-slate-200', 'dark:bg-slate-700'));
-                    btn.classList.add('bg-slate-200', 'dark:bg-slate-700');
-                    appContainer.classList.remove('max-w-5xl', 'max-w-3xl', 'max-w-lg');
-                    if (view === 'laptop') appContainer.classList.add('max-w-5xl');
+                    viewBtns.forEach(b => b.classList.remove('bg-slate-200', 'dark:bg-slate-800'));
+                    btn.classList.add('bg-slate-200', 'dark:bg-slate-800');
+                    appContainer.classList.remove('max-w-6xl', 'max-w-3xl', 'max-w-lg');
+                    if (view === 'laptop') appContainer.classList.add('max-w-6xl');
                     else if (view === 'tablet') appContainer.classList.add('max-w-3xl');
                     else appContainer.classList.add('max-w-lg');
                 });
@@ -478,7 +471,7 @@ FORMAT OUTPUT FINAL (HANYA INI, TANPA KATA PEMBUKA/PENUTUP):
             const showNotification = (message, type = 'success') => {
                 notification.textContent = message;
                 notification.className = 'fixed bottom-5 right-5 text-white text-sm py-2 px-4 rounded-lg shadow-lg transform transition-all duration-500 ease-out z-50'; // Reset
-                if (type === 'success') notification.classList.add('bg-primary');
+                if (type === 'success') notification.classList.add('bg-sky-600');
                 else if (type === 'error') notification.classList.add('bg-red-600');
                 else notification.classList.add('bg-slate-600');
                 clearTimeout(notificationTimeout);
@@ -491,4 +484,3 @@ FORMAT OUTPUT FINAL (HANYA INI, TANPA KATA PEMBUKA/PENUTUP):
     </script>
 </body>
 </html>
-
