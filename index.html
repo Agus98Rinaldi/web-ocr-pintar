@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OCR Pintar - Ekstrak Teks dari Gambar</title>
-    <meta name="description" content="Tempelkan gambar atau screenshot untuk mengekstrak teks secara instan dengan teknologi AI OCR. Mendukung Bahasa Indonesia dan Arab.">
+    <meta name="description" content="Tempelkan atau unggah gambar/screenshot untuk mengekstrak teks secara instan dengan teknologi AI OCR. Mendukung Bahasa Indonesia dan Arab.">
 
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -51,7 +51,7 @@
             <div class="flex justify-between items-center mb-6">
                 <h2 class="font-bold text-lg text-sky-600 dark:text-sky-400">Menu</h2>
                 <button id="close-sidebar-btn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
             <nav class="flex flex-col gap-2">
@@ -106,13 +106,13 @@
             <div class="flex flex-col h-[50vh] lg:h-auto">
                 <div class="mb-3">
                     <p class="text-sm text-slate-500 dark:text-slate-400">
-                        Tempel screenshot (<kbd class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600">Ctrl</kbd>+<kbd class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600">V</kbd>) untuk mulai.
+                        Tempel (<kbd class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600">Ctrl</kbd>+<kbd class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600">V</kbd>) atau klik untuk unggah.
                     </p>
                 </div>
                 <div id="paste-area" class="relative w-full flex-grow bg-white dark:bg-slate-800/50 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl flex justify-center items-center text-center p-4 cursor-pointer hover:border-sky-500 dark:hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500" tabindex="0">
                     <div id="paste-placeholder" class="text-slate-400 dark:text-slate-500 transition-opacity duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-plus mx-auto mb-2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><line x1="16" x2="22" y1="5" y2="5"/><line x1="19" x2="19" y1="2" y2="8"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-                        <p>Area Tempel Gambar</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload-cloud mx-auto mb-2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+                        <p>Tempel gambar atau klik untuk unggah</p>
                     </div>
                     <img id="pasted-image" src="" alt="Gambar yang ditempel" class="hidden max-w-full max-h-full object-contain rounded-lg"/>
                     <div id="loader" class="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-white rounded-xl hidden transition-opacity duration-300">
@@ -120,6 +120,7 @@
                         <p id="loader-text" class="text-sm font-medium">Memproses gambar...</p>
                     </div>
                 </div>
+                <input type="file" id="file-upload" class="hidden" accept="image/*">
             </div>
 
             <!-- Kolom Hasil Teks -->
@@ -127,6 +128,9 @@
                 <div class="flex justify-between items-center mb-3">
                      <h2 class="font-semibold text-lg">Hasil Teks</h2>
                      <div class="flex gap-2">
+                        <button id="clear-btn" title="Hapus Hasil" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
                         <button id="copy-btn" title="Salin Hasil" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                         </button>
@@ -150,9 +154,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             // === DOM Element Selections ===
             const pasteArea = document.getElementById('paste-area');
+            const fileUpload = document.getElementById('file-upload');
             const pastePlaceholder = document.getElementById('paste-placeholder');
             const pastedImage = document.getElementById('pasted-image');
             const outputText = document.getElementById('output-text');
+            const clearBtn = document.getElementById('clear-btn');
             const copyBtn = document.getElementById('copy-btn');
             const saveBtn = document.getElementById('save-btn');
             const loader = document.getElementById('loader');
@@ -177,14 +183,10 @@
                 try {
                     console.log('Initializing scheduler...');
                     scheduler = Tesseract.createScheduler();
-                    
-                    // FIX: Initialize worker and languages in a single, more robust call.
-                    // This is the recommended pattern for Tesseract.js v5 and avoids potential race conditions.
                     const worker = await Tesseract.createWorker('ind+ara', 1, {
                          workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js',
                          corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5/tesseract-core.wasm.js',
                     });
-                    
                     scheduler.addWorker(worker);
                     isWorkerReady = true;
                     console.log('Worker is ready and languages are loaded.');
@@ -198,7 +200,20 @@
             // Initialize the AI engine as soon as the page loads
             initializeScheduler();
             
-            // === Sidebar Management ===
+            // === UI Management ===
+            const resetUI = () => {
+                if (pastedImage.src) {
+                    URL.revokeObjectURL(pastedImage.src);
+                }
+                pastedImage.src = '';
+                pastedImage.classList.add('hidden');
+                pastePlaceholder.classList.remove('hidden');
+                outputText.value = '';
+                clearBtn.disabled = true;
+                copyBtn.disabled = true;
+                saveBtn.disabled = true;
+            };
+
             const openSidebar = () => {
                 sidebar.classList.remove('-translate-x-full');
                 sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
@@ -211,7 +226,6 @@
             closeSidebarBtn.addEventListener('click', closeSidebar);
             sidebarOverlay.addEventListener('click', closeSidebar);
             
-            // === View Mode Management ===
             viewBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const view = btn.dataset.view;
@@ -245,28 +259,28 @@
                 applyTheme(newTheme);
             });
 
-            // === OCR Processing Logic (using the scheduler) ===
+            // === OCR Processing Logic ===
             const processImage = async (imageFile) => {
                 if (!isWorkerReady) {
                     showNotification('Mesin AI belum siap, mohon tunggu.', 'info');
                     return;
                 }
 
+                resetUI(); // Clear previous results first
                 pastedImage.src = URL.createObjectURL(imageFile);
                 pastedImage.classList.remove('hidden');
                 pastePlaceholder.classList.add('hidden');
                 loader.classList.remove('hidden');
-                outputText.value = '';
-                copyBtn.disabled = true;
-                saveBtn.disabled = true;
-
+                
                 try {
                     loaderText.textContent = `Mengirim tugas ke AI...`;
                     const { data: { text } } = await scheduler.addJob('recognize', imageFile);
                     
                     outputText.value = text || "Tidak ada teks yang terdeteksi.";
                     showNotification(text ? 'Teks berhasil diekstrak!' : 'Tidak ada teks yang terdeteksi.', text ? 'success' : 'info');
+                    
                     if (text) {
+                        clearBtn.disabled = false;
                         copyBtn.disabled = false;
                         saveBtn.disabled = false;
                     }
@@ -279,7 +293,7 @@
                 }
             };
 
-            // === Clipboard Paste Event Handler ===
+            // === Event Handlers ===
             document.onpaste = (event) => {
                 const items = event.clipboardData.items;
                 let imageFile = null;
@@ -295,7 +309,17 @@
                 }
             };
 
-            // === Button Actions ===
+            pasteArea.addEventListener('click', () => fileUpload.click());
+
+            fileUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    processImage(file);
+                }
+                event.target.value = null; // Allows re-uploading the same file
+            });
+
+            clearBtn.addEventListener('click', resetUI);
             copyBtn.addEventListener('click', () => {
                 if (outputText.value) {
                     navigator.clipboard.writeText(outputText.value)
@@ -336,4 +360,3 @@
     </script>
 </body>
 </html>
-
