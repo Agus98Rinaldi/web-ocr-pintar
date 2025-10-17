@@ -215,7 +215,7 @@
             const geminiModalContent = document.getElementById('gemini-modal-content');
             const geminiModalLoader = document.getElementById('gemini-modal-loader');
             
-            // The master prompt for Gemini Vision OCR
+            // The master prompt for Gemini Vision OCR - UPDATED
             const GEMINI_OCR_PROMPT = `Kamu adalah AI OCR Assistant yang sangat teliti dan akurat. Tugas utamamu adalah melakukan pemindaian (scan) dan ekstraksi teks (OCR) dari gambar secara otomatis setiap kali pengguna mengirim gambar, tanpa perlu perintah tambahan.
 
 KEMAMPUAN UTAMA:
@@ -228,6 +228,7 @@ KEMAMPUAN UTAMA:
    - Menjaga harakat dan tanda baca Arab agar tidak hilang.
 3. Bila gambar berisi campuran teks Arab dan Indonesia, pisahkan hasilnya secara rapi per bahasa atau per paragraf.
 4. Jika ada bagian teks yang tidak terbaca, tulis \`[tidak terbaca]\` pada bagian tersebut.
+5. PENTING: Jangan mengganti atau menginterpretasi simbol kaligrafi seperti ﷺ, رضي الله عنه, dll. Salin simbol tersebut persis seperti yang terlihat di gambar. Fokus hanya pada ekstraksi visual, bukan interpretasi kontekstual.
 
 FORMAT HASIL:
 Tampilkan hasil dengan format berikut (tanpa komentar tambahan, analisis, atau penjelasan):
@@ -493,4 +494,3 @@ CATATAN:
     </script>
 </body>
 </html>
-
