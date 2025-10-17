@@ -174,11 +174,10 @@
             const appContainer = document.getElementById('app-container');
             const viewBtns = document.querySelectorAll('.view-btn');
 
-            // === NEW ARCHITECTURE: Persistent Worker using Scheduler ===
+            // === Persistent Worker using Scheduler ===
             let scheduler;
             let isWorkerReady = false;
 
-            // Function to initialize the scheduler and one persistent worker
             const initializeScheduler = async () => {
                 try {
                     console.log('Initializing scheduler...');
@@ -189,7 +188,7 @@
                     });
                     scheduler.addWorker(worker);
                     isWorkerReady = true;
-                    console.log('Worker is ready and languages are loaded.');
+                    console.log('Worker is ready.');
                     showNotification('Mesin AI siap digunakan!', 'success');
                 } catch (error) {
                     console.error('Failed to initialize AI worker:', error);
@@ -197,9 +196,40 @@
                 }
             };
             
-            // Initialize the AI engine as soon as the page loads
             initializeScheduler();
             
+            // === NEW: Image Pre-processing Function ===
+            const preprocessImage = (imageFile) => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            ctx.drawImage(img, 0, 0);
+
+                            // Convert to grayscale and increase contrast
+                            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                            const data = imageData.data;
+                            for (let i = 0; i < data.length; i += 4) {
+                                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                                const color = avg > 128 ? 255 : 0; // Binarization
+                                data[i] = color;     // Red
+                                data[i + 1] = color; // Green
+                                data[i + 2] = color; // Blue
+                            }
+                            ctx.putImageData(imageData, 0, 0);
+                            resolve(canvas.toDataURL('image/png'));
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(imageFile);
+                });
+            };
+
             // === UI Management ===
             const resetUI = () => {
                 if (pastedImage.src) {
@@ -214,14 +244,8 @@
                 saveBtn.disabled = true;
             };
 
-            const openSidebar = () => {
-                sidebar.classList.remove('-translate-x-full');
-                sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
-            };
-            const closeSidebar = () => {
-                sidebar.classList.add('-translate-x-full');
-                sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
-            };
+            const openSidebar = () => sidebar.classList.remove('-translate-x-full');
+            const closeSidebar = () => sidebar.classList.add('-translate-x-full');
             menuBtn.addEventListener('click', openSidebar);
             closeSidebarBtn.addEventListener('click', closeSidebar);
             sidebarOverlay.addEventListener('click', closeSidebar);
@@ -259,28 +283,31 @@
                 applyTheme(newTheme);
             });
 
-            // === OCR Processing Logic ===
+            // === OCR Processing Logic (Now with pre-processing) ===
             const processImage = async (imageFile) => {
                 if (!isWorkerReady) {
                     showNotification('Mesin AI belum siap, mohon tunggu.', 'info');
                     return;
                 }
 
-                resetUI(); // Clear previous results first
+                resetUI();
                 pastedImage.src = URL.createObjectURL(imageFile);
                 pastedImage.classList.remove('hidden');
                 pastePlaceholder.classList.add('hidden');
                 loader.classList.remove('hidden');
                 
                 try {
+                    loaderText.textContent = `Meningkatkan kualitas gambar...`;
+                    const preprocessedImage = await preprocessImage(imageFile);
+
                     loaderText.textContent = `Mengirim tugas ke AI...`;
-                    const { data: { text } } = await scheduler.addJob('recognize', imageFile);
+                    const { data: { text } } = await scheduler.addJob('recognize', preprocessedImage);
                     
                     outputText.value = text || "Tidak ada teks yang terdeteksi.";
                     showNotification(text ? 'Teks berhasil diekstrak!' : 'Tidak ada teks yang terdeteksi.', text ? 'success' : 'info');
                     
+                    clearBtn.disabled = false;
                     if (text) {
-                        clearBtn.disabled = false;
                         copyBtn.disabled = false;
                         saveBtn.disabled = false;
                     }
@@ -316,7 +343,7 @@
                 if (file) {
                     processImage(file);
                 }
-                event.target.value = null; // Allows re-uploading the same file
+                event.target.value = null;
             });
 
             clearBtn.addEventListener('click', resetUI);
@@ -360,3 +387,4 @@
     </script>
 </body>
 </html>
+
