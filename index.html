@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCR Pintar - Ditenagai Gemini AI</title>
-    <meta name="description" content="Ekstrak teks dari gambar secara akurat dengan kekuatan Google Gemini AI. Mendukung multi-gambar, kamera, dan lainnya.">
+    <title>OCR Cerdas - Ditenagai Gemini AI</title>
+    <meta name="description" content="Ekstrak teks dari gambar secara akurat dengan kekuatan Google Gemini AI. Mendukung Bahasa Indonesia, Arab, dan lainnya.">
 
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,59 +15,86 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
+        /* Apply custom fonts */
         body { font-family: 'Inter', sans-serif; }
         .font-arabic { font-family: 'Noto Sans Arabic', sans-serif; }
+        
+        /* Custom scrollbar for a cleaner look */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
-        .dark ::-webkit-scrollbar-track { background: #0f172a; }
+        .dark ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .dark ::-webkit-scrollbar-thumb { background: #334155; }
-        * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* Smooth transitions for a polished feel */
+        * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease; }
         .sidebar-transition { transition: transform 0.3s ease-in-out; }
-        
-        /* New Loader Animation */
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 95%; }
+
+        /* --- NEW: AI Scan Animation --- */
+        @keyframes scan-animation {
+            0% { transform: translateY(-10%); }
+            100% { transform: translateY(100%); }
         }
         .scan-line {
-            animation: scan 2s linear infinite alternate;
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.8), transparent);
+            box-shadow: 0 0 10px 2px rgba(34, 211, 238, 0.6);
+            animation: scan-animation 2s infinite linear;
         }
     </style>
     <script>
+        // Tailwind dark mode configuration
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        'primary': '#2dd4bf', // Teal-400
-                        'primary-hover': '#14b8a6', // Teal-500
-                    }
-                }
-            }
         }
     </script>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 antialiased">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 antialiased min-h-screen">
 
-    <!-- Sidebar Menu (Unchanged) -->
+    <!-- NEW: Fixed Top Menubar -->
+    <nav class="fixed top-0 left-0 right-0 z-30 bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-sm">
+        <header class="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 grid grid-cols-3 items-center h-16">
+            <div class="flex justify-start">
+                <button id="menu-btn" title="Buka Menu" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="text-center">
+                <h1 class="text-xl sm:text-2xl font-bold text-sky-600 dark:text-sky-400">OCR Cerdas</h1>
+                <p class="text-slate-500 dark:text-slate-400 -mt-1 text-xs sm:text-sm">Ditenagai Gemini AI</p>
+            </div>
+            <div class="flex justify-end">
+                <button id="theme-toggle" title="Ubah Tema" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                    <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                </button>
+            </div>
+        </header>
+    </nav>
+
+    <!-- Sidebar Menu -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 opacity-0 pointer-events-none transition-opacity duration-300"></div>
-    <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-white dark:bg-slate-800 z-50 shadow-lg transform -translate-x-full sidebar-transition">
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white dark:bg-slate-800 z-50 shadow-lg transform -translate-x-full sidebar-transition">
         <div class="p-4 flex flex-col h-full">
             <div>
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="font-bold text-lg text-primary">Menu</h2>
+                    <h2 class="font-bold text-lg text-sky-600 dark:text-sky-400">Menu</h2>
                     <button id="close-sidebar-btn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </div>
                 <nav class="flex flex-col gap-2">
-                    <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                    <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-info"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                         <span>Tentang Web</span>
                     </a>
-                    <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-text"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 8H7"/><path d="M17 12H7"/></svg>
+                    <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-text"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 8H7"/><path d="M17 12H7"/></svg>
                         <span>Kritik & Saran</span>
                     </a>
                 </nav>
@@ -75,109 +102,127 @@
             <div class="mt-auto">
                 <div class="flex items-center gap-1">
                     <label for="api-key-input" class="text-sm font-medium text-slate-600 dark:text-slate-400">Kunci API Gemini</label>
-                    <a href="https://aistudio.google.com/app/apikey" target="_blank" title="Cara mendapatkan kunci API" class="text-slate-400 hover:text-primary">
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" title="Cara mendapatkan kunci API" class="text-slate-400 hover:text-sky-500">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-help-circle"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                     </a>
                 </div>
-                <input type="password" id="api-key-input" placeholder="Masukkan kunci API Anda" class="mt-1 w-full p-2 border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none">
+                <input type="password" id="api-key-input" placeholder="Masukkan kunci API Anda" class="mt-1 w-full p-2 border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none">
                 <p class="text-xs text-slate-400 mt-1">Kunci Anda disimpan dengan aman di browser.</p>
             </div>
         </div>
     </aside>
-    
-    <!-- New Top Bar -->
-    <header class="fixed top-0 left-0 right-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800">
-        <div class="w-full max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-16">
-                <button id="menu-btn" title="Buka Menu" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-                </button>
-                <div class="flex items-center gap-2">
-                    <button data-view="mobile" class="view-btn p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700" title="Tampilan HP">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-                    </button>
-                    <button data-view="tablet" class="view-btn p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700" title="Tampilan Tablet">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tablet"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
-                    </button>
-                    <button data-view="laptop" class="view-btn p-2 rounded-md bg-slate-200 dark:bg-slate-700" title="Tampilan Laptop">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55A1 1 0 0 1 20.7 20H3.3a1 1 0 0 1-.58-1.45L4 16"/></svg>
-                    </button>
-                </div>
-                <button id="theme-toggle" title="Ubah Tema" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
-                    <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-                    <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-                </button>
-            </div>
-        </div>
-    </header>
 
-    <!-- Main Content Area -->
-    <div class="w-full min-h-screen flex flex-col items-center justify-center pt-24 pb-8 px-4">
-        <div id="app-container" class="w-full max-w-5xl transition-all duration-300">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl sm:text-3xl font-bold text-primary">OCR Pintar</h1>
-                <p class="text-slate-500 dark:text-slate-400 mt-1">Diperkuat oleh Gemini AI</p>
-            </div>
-            
-            <!-- Input Area -->
-            <div class="bg-white dark:bg-slate-800/50 p-4 sm:p-5 rounded-xl shadow-lg mb-6">
-                <div id="paste-area" class="relative w-full h-48 bg-slate-50 dark:bg-slate-700/50 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl flex justify-center items-center text-center p-4 cursor-pointer hover:border-primary dark:hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary" tabindex="0">
+    <div id="app-container" class="w-full max-w-6xl mx-auto pt-24 px-4 sm:px-6 md:px-8 pb-8 transition-all duration-300">
+        
+        <!-- View Mode Selector -->
+        <div class="flex justify-center items-center gap-2 mb-4">
+            <button data-view="mobile" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700" title="Tampilan HP">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+            </button>
+             <button data-view="tablet" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700" title="Tampilan Tablet">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tablet"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
+            </button>
+            <button data-view="laptop" class="view-btn p-2 rounded-lg bg-slate-200 dark:bg-slate-800" title="Tampilan Laptop">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55A1 1 0 0 1 20.7 20H3.3a1 1 0 0 1-.58-1.45L4 16"/></svg>
+            </button>
+        </div>
+        
+        <p class="text-xs text-center text-slate-400 dark:text-slate-500 mb-4">Hasil pindaian dari AI, mohon periksa kembali keakuratannya.</p>
+
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            <!-- Kolom Input Gambar -->
+            <div class="flex flex-col h-[50vh] lg:h-auto">
+                <div id="paste-area" class="relative w-full flex-grow bg-white dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl flex justify-center items-center text-center p-4 cursor-pointer hover:border-sky-500 dark:hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500" tabindex="0">
                     <div id="paste-placeholder" class="text-slate-400 dark:text-slate-500 transition-opacity duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload-cloud mx-auto mb-2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
                         <p>Tempel gambar atau klik untuk unggah</p>
                     </div>
+                    <img id="pasted-image" src="" alt="Gambar yang ditempel" class="hidden max-w-full max-h-full object-contain rounded-lg"/>
+                    <div id="loader" class="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-white rounded-xl hidden transition-opacity duration-300 overflow-hidden">
+                        <!-- NEW: AI Scan Animation Line -->
+                        <div class="scan-line"></div>
+                        <p id="loader-text" class="text-sm font-medium z-10">Memproses gambar...</p>
+                    </div>
                 </div>
-                <input type="file" id="file-upload" class="hidden" accept="image/*" multiple>
-                <div class="flex items-center justify-center gap-2 mt-3">
-                    <button id="camera-btn" title="Pindai dari Kamera" class="flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                       <span>Kamera</span>
-                    </button>
-                </div>
+                <input type="file" id="file-upload" class="hidden" accept="image/*">
+                <!-- NEW: Camera Input Button -->
+                <button id="camera-btn" class="mt-4 w-full flex items-center justify-center gap-2 p-3 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 dark:focus:ring-offset-slate-900 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                    Ambil Foto dari Kamera
+                </button>
             </div>
 
-            <!-- Results Area -->
-            <main id="results-container" class="space-y-6"></main>
-             
-            <p class="text-xs text-center text-slate-400 dark:text-slate-500 mt-6">Hasil pindaian dari AI, mohon periksa kembali keakuratannya.</p>
+            <!-- Kolom Hasil Teks -->
+            <div class="flex flex-col h-[50vh] lg:h-auto">
+                <div class="flex justify-between items-center mb-3">
+                     <h2 class="font-semibold text-lg">Hasil Teks</h2>
+                     <div class="flex items-center gap-2">
+                         <!-- GEMINI BUTTONS -->
+                         <button id="gemini-explain-btn" title="Jelaskan dengan AI ✨" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="m12 3-1.9 4.2-4.2 1.9 4.2 1.9 1.9 4.2 1.9-4.2 4.2-1.9-4.2-1.9L12 3z"/><path d="M5 13l1.9 4.2 4.2 1.9-4.2 1.9L5 23l-1.9-4.2-4.2-1.9 4.2-1.9L5 13z"/></svg>
+                         </button>
+                         <button id="gemini-translate-btn" title="Terjemahkan ke Indonesia ✨" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-languages"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+                         </button>
+                         <div class="h-5 w-px bg-slate-300 dark:bg-slate-700"></div>
+                         <!-- STANDARD BUTTONS -->
+                         <button id="clear-btn" title="Hapus Hasil" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                         </button>
+                         <button id="copy-btn" title="Salin Hasil" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                         </button>
+                         <button id="save-btn" title="Simpan sebagai .txt" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                         </button>
+                     </div>
+                </div>
+                <textarea id="output-text" readonly class="font-arabic w-full flex-grow bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Hasil ekstraksi teks akan muncul di sini..."></textarea>
+            </div>
+        </main>
+        
+        <!-- Notifikasi -->
+        <div id="notification" class="fixed bottom-5 right-5 text-white text-sm py-2 px-4 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-500 ease-out z-50">
+            Pesan notifikasi
         </div>
     </div>
     
-    <div id="notification" class="fixed bottom-5 right-5 text-white text-sm py-2 px-4 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-500 ease-out z-50">
-        Pesan notifikasi
-    </div>
-    
+    <!-- Gemini Modal -->
     <div id="gemini-modal-overlay" class="fixed inset-0 bg-black/60 z-[99] opacity-0 pointer-events-none transition-opacity duration-300"></div>
     <div id="gemini-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-2xl bg-white dark:bg-slate-800 z-[100] rounded-2xl shadow-lg p-6 transform scale-95 opacity-0 pointer-events-none transition-all duration-300">
         <div class="flex justify-between items-center mb-4">
-            <h3 id="gemini-modal-title" class="text-xl font-bold text-primary">Hasil dari AI ✨</h3>
+            <h3 id="gemini-modal-title" class="text-xl font-bold text-sky-600 dark:text-sky-400">Hasil dari AI ✨</h3>
             <button id="gemini-modal-close-btn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
         </div>
         <div id="gemini-modal-content" class="max-h-[60vh] overflow-y-auto pr-2 font-arabic text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+            <!-- Gemini result will be inserted here -->
         </div>
         <div id="gemini-modal-loader" class="text-center py-8 hidden">
-            <svg class="animate-spin h-8 w-8 text-primary mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <svg class="animate-spin h-8 w-8 text-sky-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
             <p class="mt-2 text-slate-500 dark:text-slate-400">AI sedang berpikir...</p>
         </div>
     </div>
 
-    <div id="camera-modal-overlay" class="fixed inset-0 bg-black/70 z-[99] opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4">
-        <div id="camera-modal" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4 w-full max-w-lg transform scale-95 opacity-0 transition-all duration-300">
-            <video id="camera-view" class="w-full h-auto rounded-lg" autoplay playsinline></video>
-            <div class="flex items-center justify-center mt-4 gap-4">
-                 <button id="camera-close-btn" class="p-3 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                 </button>
-                 <button id="camera-capture-btn" class="p-4 rounded-full bg-primary hover:bg-primary-hover text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                 </button>
-                 <div class="w-12 h-12"></div> <!-- Spacer -->
-            </div>
+    <!-- NEW: Camera Modal -->
+    <div id="camera-modal-overlay" class="fixed inset-0 bg-black/60 z-[99] opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    <div id="camera-modal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-11/12 max-w-xl bg-white dark:bg-slate-800 z-[100] rounded-2xl shadow-lg p-6 transform scale-95 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-sky-600 dark:text-sky-400">Ambil Gambar</h3>
+            <button id="camera-modal-close-btn" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
         </div>
+        <div class="relative bg-black rounded-lg overflow-hidden">
+            <video id="camera-video" class="w-full h-auto" playsinline></video>
+            <canvas id="camera-canvas" class="hidden"></canvas>
+        </div>
+        <button id="capture-btn" class="mt-4 w-full flex items-center justify-center gap-2 p-3 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 dark:focus:ring-offset-slate-800 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            Ambil Gambar
+        </button>
     </div>
-
 
     <!-- Main Logic Script -->
     <script>
@@ -187,7 +232,15 @@
             const pasteArea = document.getElementById('paste-area');
             const fileUpload = document.getElementById('file-upload');
             const pastePlaceholder = document.getElementById('paste-placeholder');
-            const resultsContainer = document.getElementById('results-container');
+            const pastedImage = document.getElementById('pasted-image');
+            const outputText = document.getElementById('output-text');
+            const clearBtn = document.getElementById('clear-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const geminiExplainBtn = document.getElementById('gemini-explain-btn');
+            const geminiTranslateBtn = document.getElementById('gemini-translate-btn');
+            const loader = document.getElementById('loader');
+            const loaderText = document.getElementById('loader-text');
             const notification = document.getElementById('notification');
             const themeToggle = document.getElementById('theme-toggle');
             const themeIconLight = document.getElementById('theme-icon-light');
@@ -198,27 +251,31 @@
             const sidebarOverlay = document.getElementById('sidebar-overlay');
             const appContainer = document.getElementById('app-container');
             const viewBtns = document.querySelectorAll('.view-btn');
-            const cameraBtn = document.getElementById('camera-btn');
-            const cameraModalOverlay = document.getElementById('camera-modal-overlay');
-            const cameraModal = document.getElementById('camera-modal');
-            const cameraView = document.getElementById('camera-view');
-            const cameraCaptureBtn = document.getElementById('camera-capture-btn');
-            const cameraCloseBtn = document.getElementById('camera-close-btn');
             const geminiModal = document.getElementById('gemini-modal');
             const geminiModalOverlay = document.getElementById('gemini-modal-overlay');
             const geminiModalCloseBtn = document.getElementById('gemini-modal-close-btn');
             const geminiModalTitle = document.getElementById('gemini-modal-title');
             const geminiModalContent = document.getElementById('gemini-modal-content');
             const geminiModalLoader = document.getElementById('gemini-modal-loader');
-
-            let cameraStream = null;
-
+            // NEW Camera elements
+            const cameraBtn = document.getElementById('camera-btn');
+            const cameraModal = document.getElementById('camera-modal');
+            const cameraModalOverlay = document.getElementById('camera-modal-overlay');
+            const cameraModalCloseBtn = document.getElementById('camera-modal-close-btn');
+            const cameraVideo = document.getElementById('camera-video');
+            const cameraCanvas = document.getElementById('camera-canvas');
+            const captureBtn = document.getElementById('capture-btn');
+            let stream = null;
+            
+            // The master prompt for Gemini Vision OCR - ENHANCED V2
             const GEMINI_OCR_PROMPT = `Anda adalah AI OCR Assistant dengan tingkat presisi tertinggi, yang bertugas sebagai pemindai visual murni.
 
 ATURAN MUTLAK:
 1.  **Tugas Inti:** Ekstrak teks dari gambar SECARA VISUAL dan LITERAL. Anda adalah mesin fotokopi, bukan penafsir.
 2.  **Akurasi Total:** Salin setiap karakter, tanda baca, dan harakat (untuk teks Arab) persis seperti yang terlihat. JANGAN mengubah, mengoreksi, atau menghilangkan apa pun.
-3.  **Tata Letak:** Pertahankan paragraf dan jeda baris sebisa mungkin. Jika teks dalam gambar bersambung dalam satu paragraf, JANGAN memecahnya menjadi paragraf baru di hasil. Jika ada beberapa gambar, gabungkan teksnya menjadi satu kesatuan yang utuh dan logis.
+3.  **Bahasa:** Mendukung Bahasa Indonesia dan Arab. Jika tercampur, pertahankan urutan dan tata letak aslinya.
+4.  **Teks Rusak:** Untuk bagian yang benar-benar tidak terbaca, gunakan placeholder \`[tidak terbaca]\`.
+5.  **Tata Letak:** Pertahankan paragraf dan jeda baris sebisa mungkin. Jika teks dalam gambar bersambung dalam satu paragraf, JANGAN memecahnya menjadi paragraf baru di hasil. Jika ada beberapa gambar, gabungkan teksnya menjadi satu kesatuan yang utuh dan logis.
 
 ATURAN SPESIFIK KALIGRAFI ISLAMI (PALING KRUSIAL):
 -   **Tugas Anda adalah menyalin TEKS ARAB dari simbol kaligrafi, bukan mengganti simbolnya.**
@@ -230,11 +287,34 @@ ATURAN SPESIFIK KALIGRAFI ISLAMI (PALING KRUSIAL):
 FORMAT OUTPUT FINAL (HANYA INI, TANPA KATA PEMBUKA/PENUTUP):
 (Teks hasil pindai yang 100% akurat secara visual ada di sini)`;
 
+            // === API Key Management ===
             apiKeyInput.value = localStorage.getItem('geminiApiKey') || '';
-            apiKeyInput.addEventListener('input', (e) => localStorage.setItem('geminiApiKey', e.target.value));
+            apiKeyInput.addEventListener('input', (e) => {
+                localStorage.setItem('geminiApiKey', e.target.value);
+            });
+            
+            // === UI Management ===
+            const resetUI = () => {
+                if (pastedImage.src) URL.revokeObjectURL(pastedImage.src);
+                pastedImage.src = '';
+                pastedImage.classList.add('hidden');
+                pastePlaceholder.classList.remove('hidden');
+                outputText.value = '';
+                clearBtn.disabled = true;
+                copyBtn.disabled = true;
+                saveBtn.disabled = true;
+                geminiExplainBtn.disabled = true;
+                geminiTranslateBtn.disabled = true;
+            };
 
-            const openSidebar = () => sidebar.classList.remove('-translate-x-full');
-            const closeSidebar = () => sidebar.classList.add('-translate-x-full');
+            const openSidebar = () => {
+                sidebarOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                sidebar.classList.remove('-translate-x-full');
+            }
+            const closeSidebar = () => {
+                sidebarOverlay.classList.add('opacity-0', 'pointer-events-none');
+                sidebar.classList.add('-translate-x-full');
+            }
             menuBtn.addEventListener('click', openSidebar);
             closeSidebarBtn.addEventListener('click', closeSidebar);
             sidebarOverlay.addEventListener('click', closeSidebar);
@@ -242,46 +322,32 @@ FORMAT OUTPUT FINAL (HANYA INI, TANPA KATA PEMBUKA/PENUTUP):
             viewBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const view = btn.dataset.view;
-                    viewBtns.forEach(b => b.classList.remove('bg-slate-200', 'dark:bg-slate-700'));
-                    btn.classList.add('bg-slate-200', 'dark:bg-slate-700');
-                    appContainer.classList.remove('max-w-5xl', 'max-w-3xl', 'max-w-lg');
-                    if (view === 'laptop') appContainer.classList.add('max-w-5xl');
+                    viewBtns.forEach(b => b.classList.remove('bg-slate-200', 'dark:bg-slate-800'));
+                    btn.classList.add('bg-slate-200', 'dark:bg-slate-800');
+                    appContainer.classList.remove('max-w-6xl', 'max-w-3xl', 'max-w-lg');
+                    if (view === 'laptop') appContainer.classList.add('max-w-6xl');
                     else if (view === 'tablet') appContainer.classList.add('max-w-3xl');
-                    else if (view === 'mobile') appContainer.classList.add('max-w-lg');
+                    else appContainer.classList.add('max-w-lg');
                 });
             });
 
-            const openCamera = async () => { /* ... unchanged ... */ };
-            const closeCamera = () => { /* ... unchanged ... */ };
-            cameraBtn.addEventListener('click', openCamera);
-            cameraCloseBtn.addEventListener('click', closeCamera);
-            cameraCaptureBtn.addEventListener('click', () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = cameraView.videoWidth;
-                canvas.height = cameraView.videoHeight;
-                canvas.getContext('2d').drawImage(cameraView, 0, 0);
-                canvas.toBlob(blob => {
-                    if (blob) {
-                        const file = new File([blob], `capture-${Date.now()}.jpg`, { type: 'image/jpeg' });
-                        startProcessing([file]);
-                    }
-                }, 'image/jpeg');
-                closeCamera();
-            });
-
+            // === Theme Management ===
             const applyTheme = (theme) => {
-                document.documentElement.classList.toggle('dark', theme === 'dark');
+                if (theme === 'dark') document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
                 themeIconLight.classList.toggle('hidden', theme === 'dark');
                 themeIconDark.classList.toggle('hidden', theme !== 'dark');
             };
-            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            applyTheme(savedTheme);
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(savedTheme || (systemPrefersDark ? 'dark' : 'light'));
             themeToggle.addEventListener('click', () => {
                 const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
                 localStorage.setItem('theme', newTheme);
                 applyTheme(newTheme);
             });
-
+            
+            // === Gemini Modal Management ===
             const openGeminiModal = (title) => {
                 geminiModalTitle.textContent = title;
                 geminiModalContent.innerHTML = '';
@@ -296,30 +362,96 @@ FORMAT OUTPUT FINAL (HANYA INI, TANPA KATA PEMBUKA/PENUTUP):
             geminiModalCloseBtn.addEventListener('click', closeGeminiModal);
             geminiModalOverlay.addEventListener('click', closeGeminiModal);
 
+            // === NEW: Camera Modal Management ===
+            const openCameraModal = async () => {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    cameraVideo.srcObject = stream;
+                    cameraVideo.play();
+                    cameraModal.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                    cameraModalOverlay.classList.remove('opacity-0', 'pointer-events-none');
+                } catch (err) {
+                    console.error("Error accessing camera: ", err);
+                    showNotification('Gagal mengakses kamera. Pastikan Anda memberikan izin.', 'error');
+                }
+            };
+            
+            const closeCameraModal = () => {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                cameraVideo.srcObject = null;
+                cameraModal.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                cameraModalOverlay.classList.add('opacity-0', 'pointer-events-none');
+            };
+
+            cameraBtn.addEventListener('click', openCameraModal);
+            cameraModalCloseBtn.addEventListener('click', closeCameraModal);
+            cameraModalOverlay.addEventListener('click', closeCameraModal);
+            
+            captureBtn.addEventListener('click', () => {
+                const context = cameraCanvas.getContext('2d');
+                cameraCanvas.width = cameraVideo.videoWidth;
+                cameraCanvas.height = cameraVideo.videoHeight;
+                context.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+                
+                cameraCanvas.toBlob((blob) => {
+                    const file = new File([blob], "camera-shot.jpg", { type: "image/jpeg" });
+                    processImage(file);
+                    closeCameraModal();
+                }, 'image/jpeg');
+            });
+
+
+            // === Helper to convert image file to Base64 ===
             const imageFileToBase64 = (file) => new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = () => resolve({ mimeType: file.type, data: reader.result.split(',')[1] });
+                reader.onload = () => resolve({
+                    mimeType: file.type,
+                    data: reader.result.split(',')[1]
+                });
                 reader.onerror = error => reject(error);
                 reader.readAsDataURL(file);
             });
             
+            // === Gemini API Calls ===
             const callGeminiAPI = async (payload, maxRetries = 3) => {
                 const apiKey = localStorage.getItem('geminiApiKey');
                 if (!apiKey) {
                     showNotification('Kunci API Gemini belum diatur. Silakan masukkan di menu.', 'error');
                     return null;
                 }
+
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-                const fullPayload = { ...payload, safetySettings: [ { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" }, { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" }, { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" }, { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" } ] };
+
+                const fullPayload = {
+                    ...payload,
+                    safetySettings: [
+                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
+                    ],
+                };
+
                 for (let attempt = 0; attempt < maxRetries; attempt++) {
                     try {
-                        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fullPayload) });
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(fullPayload),
+                        });
                         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                         const result = await response.json();
                         const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                         if (text) return text;
-                        if (result.candidates?.[0]?.finishReason === 'SAFETY') return "Maaf, permintaan ini tidak dapat diproses karena alasan keamanan.";
-                        if (!result.candidates) { console.error("API Response Error:", result); return "Respons dari AI tidak valid. Kemungkinan kunci API salah atau ada masalah lain."; }
+                        if (result.candidates?.[0]?.finishReason === 'SAFETY') {
+                             return "Maaf, permintaan ini tidak dapat diproses karena alasan keamanan.";
+                        }
+                        if (!result.candidates) {
+                            console.error("API Response Error:", result);
+                            return "Respons dari AI tidak valid. Kemungkinan kunci API salah atau ada masalah lain.";
+                        }
                         throw new Error('No content in response.');
                     } catch (error) {
                         console.error(`Attempt ${attempt + 1} failed:`, error);
@@ -329,94 +461,113 @@ FORMAT OUTPUT FINAL (HANYA INI, TANPA KATA PEMBUKA/PENUTUP):
                 }
             };
             
-            const createResultCard = (file, fileIndex) => {
-                const cardId = `result-card-${fileIndex}`;
-                const card = document.createElement('div');
-                card.id = cardId;
-                card.className = 'bg-white dark:bg-slate-800/50 p-4 sm:p-5 rounded-xl shadow-lg';
-                card.innerHTML = `
-                    <div class="relative w-full h-auto mb-4 rounded-lg overflow-hidden border dark:border-slate-700">
-                        <img src="${URL.createObjectURL(file)}" class="w-full h-auto object-contain" />
-                        <div id="loader-${fileIndex}" class="absolute inset-0 bg-black/80 flex-col justify-center items-center text-white hidden">
-                           <div class="w-16 h-20 relative">
-                               <svg class="w-full h-full text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>
-                               <div class="absolute left-0 w-full h-1 bg-primary/50 scan-line"></div>
-                           </div>
-                           <p id="loader-text-${fileIndex}" class="text-sm font-medium mt-3">Sedang memindai...</p>
-                        </div>
-                    </div>
-                    <div class="flex justify-end items-center mb-2 flex-wrap gap-1">
-                        <!-- Buttons will be here -->
-                    </div>
-                    <textarea id="output-${fileIndex}" readonly class="font-arabic w-full h-48 bg-slate-50 dark:bg-slate-700/50 border border-slate-300 dark:border-slate-600 rounded-xl p-4 resize-y focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
-                `;
-                resultsContainer.appendChild(card);
-                return card;
-            };
-
-            const startProcessing = async (files) => {
+            // === Main OCR Processing Logic (Now using Gemini Vision) ===
+            const processImage = async (imageFile) => {
                 const apiKey = localStorage.getItem('geminiApiKey');
                 if (!apiKey) {
                     showNotification('Silakan atur Kunci API Gemini Anda di menu samping.', 'error');
                     openSidebar();
                     return;
                 }
-                if (!files || files.length === 0) return;
                 
-                resultsContainer.innerHTML = ''; // Clear previous results
+                resetUI();
+                pastedImage.src = URL.createObjectURL(imageFile);
+                pastedImage.classList.remove('hidden');
+                pastePlaceholder.classList.add('hidden');
+                loader.classList.remove('hidden');
+                
+                try {
+                    loaderText.textContent = `Mengubah format gambar...`;
+                    const { mimeType, data: base64ImageData } = await imageFileToBase64(imageFile);
 
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    const card = createResultCard(file, i);
-                    const loader = card.querySelector(`#loader-${i}`);
-                    const loaderText = card.querySelector(`#loader-text-${i}`);
-                    const outputText = card.querySelector(`#output-${i}`);
+                    loaderText.textContent = `AI sedang memindai gambar...`;
+                    
+                    const payload = {
+                        contents: [{
+                            parts: [
+                                { text: GEMINI_OCR_PROMPT },
+                                { inlineData: { mimeType, data: base64ImageData } }
+                            ]
+                        }]
+                    };
 
-                    try {
-                        loader.style.display = 'flex';
-                        loaderText.textContent = `Mempersiapkan gambar...`;
-                        const { mimeType, data: base64ImageData } = await imageFileToBase64(file);
+                    let resultText = await callGeminiAPI(payload);
 
-                        loaderText.textContent = `AI sedang memindai...`;
-                        const payload = { contents: [{ parts: [{ text: GEMINI_OCR_PROMPT }, { inlineData: { mimeType, data: base64ImageData } }] }] };
-                        let resultText = await callGeminiAPI(payload);
-
-                        if (resultText) {
-                            resultText = resultText.replace(/^Hasil Ekstraksi:\s*/i, '').trim();
-                        }
-                        
-                        outputText.value = resultText || "Tidak ada teks yang terdeteksi.";
-                    } catch (error) {
-                        console.error(`OCR Error for file ${i}:`, error);
-                        outputText.value = "Terjadi kesalahan saat memproses gambar.";
-                    } finally {
-                        loader.style.display = 'none';
+                    if (resultText) {
+                        resultText = resultText.replace(/^Hasil Ekstraksi:\s*/i, '').trim();
                     }
+                    
+                    outputText.value = resultText || "Tidak ada teks yang terdeteksi.";
+                    showNotification(resultText ? 'Teks berhasil diekstrak!' : 'Tidak ada teks yang terdeteksi.', resultText ? 'success' : 'info');
+                    
+                    clearBtn.disabled = false;
+                    if (resultText) {
+                        copyBtn.disabled = false;
+                        saveBtn.disabled = false;
+                        geminiExplainBtn.disabled = false;
+                        geminiTranslateBtn.disabled = false;
+                    }
+                } catch (error) {
+                    console.error("OCR Error:", error);
+                    outputText.value = "Terjadi kesalahan saat memproses gambar.";
+                    showNotification('Gagal memproses gambar.', 'error');
+                } finally {
+                    loader.classList.add('hidden');
                 }
-                 showNotification(`${files.length} gambar selesai diproses!`, 'success');
             };
 
+            // === Event Handlers ===
+            document.onpaste = (event) => {
+                const items = event.clipboardData.items;
+                const imageFile = Array.from(items).find(item => item.type.includes('image'))?.getAsFile();
+                if (imageFile) {
+                    event.preventDefault();
+                    processImage(imageFile);
+                }
+            };
             pasteArea.addEventListener('click', () => fileUpload.click());
             fileUpload.addEventListener('change', (event) => {
-                if (event.target.files.length > 0) {
-                    startProcessing(Array.from(event.target.files));
-                }
-                event.target.value = null; // Reset picker
+                const file = event.target.files[0];
+                if (file) processImage(file);
+                event.target.value = null;
             });
-            document.addEventListener('paste', (event) => {
-                 const imageFiles = Array.from(event.clipboardData.items)
-                    .filter(item => item.type.includes('image'))
-                    .map(item => item.getAsFile());
-                if (imageFiles.length > 0) {
-                    event.preventDefault();
-                    startProcessing(imageFiles);
-                }
+            clearBtn.addEventListener('click', resetUI);
+            copyBtn.addEventListener('click', () => navigator.clipboard.writeText(outputText.value).then(() => showNotification('Hasil berhasil disalin!')));
+            saveBtn.addEventListener('click', () => {
+                const blob = new Blob([outputText.value], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = Object.assign(document.createElement('a'), { href: url, download: 'hasil-ocr.txt' });
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+                showNotification('File .txt berhasil disimpan!');
+            });
+            geminiExplainBtn.addEventListener('click', async () => {
+                const text = outputText.value;
+                if (!text) return;
+                openGeminiModal('Penjelasan dari AI ✨');
+                const payload = { contents: [{ parts: [{ text: `Jelaskan teks berikut dalam Bahasa Indonesia yang ringkas dan mudah dipahami:\n\n---\n${text}\n---` }] }] };
+                const result = await callGeminiAPI(payload);
+                geminiModalLoader.classList.add('hidden');
+                geminiModalContent.textContent = result;
+            });
+            geminiTranslateBtn.addEventListener('click', async () => {
+                const text = outputText.value;
+                if (!text) return;
+                openGeminiModal('Terjemahan ke Indonesia ✨');
+                const payload = { contents: [{ parts: [{ text: `Terjemahkan teks berikut ke dalam Bahasa Indonesia:\n\n---\n${text}\n---` }] }] };
+                const result = await callGeminiAPI(payload);
+                geminiModalLoader.classList.add('hidden');
+                geminiModalContent.textContent = result;
             });
 
+            // === Notification Helper ===
+            let notificationTimeout;
             const showNotification = (message, type = 'success') => {
                 notification.textContent = message;
-                notification.className = 'fixed bottom-5 right-5 text-white text-sm py-2 px-4 rounded-lg shadow-lg transform transition-all duration-500 ease-out z-50';
-                if (type === 'success') notification.classList.add('bg-primary');
+                notification.className = 'fixed bottom-5 right-5 text-white text-sm py-2 px-4 rounded-lg shadow-lg transform transition-all duration-500 ease-out z-50'; // Reset
+                if (type === 'success') notification.classList.add('bg-sky-600');
                 else if (type === 'error') notification.classList.add('bg-red-600');
                 else notification.classList.add('bg-slate-600');
                 clearTimeout(notificationTimeout);
@@ -429,5 +580,3 @@ FORMAT OUTPUT FINAL (HANYA INI, TANPA KATA PEMBUKA/PENUTUP):
     </script>
 </body>
 </html>
-
-
