@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCR Cerdas - Ditenagai Gemini AI</title>
+    <title>OCR Pintar - Ditenagai Gemini AI</title>
     <meta name="description" content="Ekstrak teks dari gambar secara akurat dengan kekuatan Google Gemini AI. Mendukung Bahasa Indonesia, Arab, dan lainnya.">
 
     <!-- Tailwind CSS via CDN -->
@@ -31,21 +31,6 @@
         /* Smooth transitions for a polished feel */
         * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease; }
         .sidebar-transition { transition: transform 0.3s ease-in-out; }
-
-        /* --- NEW: AI Scan Animation --- */
-        @keyframes scan-animation {
-            0% { transform: translateY(-10%); }
-            100% { transform: translateY(100%); }
-        }
-        .scan-line {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.8), transparent);
-            box-shadow: 0 0 10px 2px rgba(34, 211, 238, 0.6);
-            animation: scan-animation 2s infinite linear;
-        }
     </style>
     <script>
         // Tailwind dark mode configuration
@@ -54,28 +39,7 @@
         }
     </script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 antialiased min-h-screen">
-
-    <!-- NEW: Fixed Top Menubar -->
-    <nav class="fixed top-0 left-0 right-0 z-30 bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-sm">
-        <header class="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 grid grid-cols-3 items-center h-16">
-            <div class="flex justify-start">
-                <button id="menu-btn" title="Buka Menu" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
-                </button>
-            </div>
-            <div class="text-center">
-                <h1 class="text-xl sm:text-2xl font-bold text-sky-600 dark:text-sky-400">OCR Cerdas</h1>
-                <p class="text-slate-500 dark:text-slate-400 -mt-1 text-xs sm:text-sm">Ditenagai Gemini AI</p>
-            </div>
-            <div class="flex justify-end">
-                <button id="theme-toggle" title="Ubah Tema" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
-                    <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-                    <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-                </button>
-            </div>
-        </header>
-    </nav>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 antialiased min-h-screen flex items-center justify-center p-4">
 
     <!-- Sidebar Menu -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-40 opacity-0 pointer-events-none transition-opacity duration-300"></div>
@@ -94,7 +58,7 @@
                         <span>Tentang Web</span>
                     </a>
                     <a href="#" class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-text"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 8H7"/><path d="M17 12H7"/></svg>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-text"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 8H7"/><path d="M17 12H7"/></svg>
                         <span>Kritik & Saran</span>
                     </a>
                 </nav>
@@ -112,14 +76,33 @@
         </div>
     </aside>
 
-    <div id="app-container" class="w-full max-w-6xl mx-auto pt-24 px-4 sm:px-6 md:px-8 pb-8 transition-all duration-300">
+    <div id="app-container" class="w-full max-w-6xl bg-slate-100 dark:bg-slate-900/50 p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm transition-all duration-300">
         
+        <!-- Header & Navigation -->
+        <header class="grid grid-cols-3 items-center mb-4">
+            <div class="flex justify-start">
+                <button id="menu-btn" title="Buka Menu" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="text-center">
+                <h1 class="text-xl sm:text-2xl font-bold text-sky-600 dark:text-sky-400">OCR Pintar</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-1 text-xs sm:text-sm">Diperkuat oleh Gemini AI</p>
+            </div>
+            <div class="flex justify-end">
+                <button id="theme-toggle" title="Ubah Tema" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                    <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon hidden"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                </button>
+            </div>
+        </header>
+
         <!-- View Mode Selector -->
         <div class="flex justify-center items-center gap-2 mb-4">
-            <button data-view="mobile" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700" title="Tampilan HP">
+            <button data-view="mobile" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800" title="Tampilan HP">
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-smartphone"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
             </button>
-             <button data-view="tablet" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700" title="Tampilan Tablet">
+             <button data-view="tablet" class="view-btn p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800" title="Tampilan Tablet">
                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tablet"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
             </button>
             <button data-view="laptop" class="view-btn p-2 rounded-lg bg-slate-200 dark:bg-slate-800" title="Tampilan Laptop">
@@ -132,24 +115,18 @@
         <main class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             <!-- Kolom Input Gambar -->
             <div class="flex flex-col h-[50vh] lg:h-auto">
-                <div id="paste-area" class="relative w-full flex-grow bg-white dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl flex justify-center items-center text-center p-4 cursor-pointer hover:border-sky-500 dark:hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500" tabindex="0">
+                <div id="paste-area" class="relative w-full flex-grow bg-white dark:bg-slate-800/50 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl flex justify-center items-center text-center p-4 cursor-pointer hover:border-sky-500 dark:hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500" tabindex="0">
                     <div id="paste-placeholder" class="text-slate-400 dark:text-slate-500 transition-opacity duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload-cloud mx-auto mb-2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
                         <p>Tempel gambar atau klik untuk unggah</p>
                     </div>
                     <img id="pasted-image" src="" alt="Gambar yang ditempel" class="hidden max-w-full max-h-full object-contain rounded-lg"/>
-                    <div id="loader" class="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-white rounded-xl hidden transition-opacity duration-300 overflow-hidden">
-                        <!-- NEW: AI Scan Animation Line -->
-                        <div class="scan-line"></div>
-                        <p id="loader-text" class="text-sm font-medium z-10">Memproses gambar...</p>
+                    <div id="loader" class="absolute inset-0 bg-black/70 flex flex-col justify-center items-center text-white rounded-xl hidden transition-opacity duration-300">
+                        <svg class="animate-spin h-8 w-8 text-white mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-circle"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                        <p id="loader-text" class="text-sm font-medium">Memproses gambar...</p>
                     </div>
                 </div>
                 <input type="file" id="file-upload" class="hidden" accept="image/*">
-                <!-- NEW: Camera Input Button -->
-                <button id="camera-btn" class="mt-4 w-full flex items-center justify-center gap-2 p-3 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 dark:focus:ring-offset-slate-900 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                    Ambil Foto dari Kamera
-                </button>
             </div>
 
             <!-- Kolom Hasil Teks -->
